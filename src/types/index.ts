@@ -1,6 +1,3 @@
-export interface Todos {
-    todos: string[];
-}
 
 export interface RickMorty {
     id: string,
@@ -23,6 +20,7 @@ export interface RickMorty {
     created: String,
   }
 
-  export interface searchResults {
-      searchResults: RickMorty[];
-  }
+  export interface RootState {
+    test: string[],
+    searchCache: Map<string, RickMorty>
+}

@@ -7,6 +7,7 @@
       <h3>{{ info.name }}</h3>
       <div>
         <p v-bind:class="info.status">{{ info.status }}</p>
+        <h6>{{ info.location.name }}</h6>
       </div>
     </div>
   </div>
