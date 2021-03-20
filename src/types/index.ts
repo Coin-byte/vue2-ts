@@ -22,5 +22,6 @@ export interface RickMorty {
 
   export interface RootState {
     test: string[],
+    hasData: boolean,
     searchCache: Map<string, RickMorty>
 }

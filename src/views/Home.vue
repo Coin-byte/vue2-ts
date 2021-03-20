@@ -11,6 +11,7 @@
           placeholder="search.."
           required
         /><br />
+        <button @click="test">wooo</button>
       </form>
     </div>
     <div class="container">
@@ -41,6 +42,9 @@ export default Vue.extend({
         .catch(error => console.error(error));
       this.query = "";
     },
+    test() {
+      console.log(this.$store.getters.testGetter)
+    }
   },
   components: { InfoCard },
 });
