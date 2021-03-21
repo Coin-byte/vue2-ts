@@ -11,16 +11,17 @@
           placeholder="search.."
           required
         /><br />
-        <button @click="test">wooo</button>
       </form>
+      <button @click="debug">Debug</button>
     </div>
     <div class="container">
-      <InfoCard v-for="result in results" :key="result.id" :info="result" />
+      <InfoCard v-for="result in allResults" :key="result.id" :info="result" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
+import { Results } from "@/types";
 import Vue from "vue";
 import InfoCard from "../components/InfoCard.vue";
 
@@ -31,19 +32,24 @@ export default Vue.extend({
     return {
       url: "https://rickandmortyapi.com/api/character/?name=",
       query: "",
-      results: [],
     };
   },
   methods: {
     fetchData() {
       fetch(this.url + this.query)
         .then(stream => stream.json())
-        .then(data => (this.results = data.results))
+        .then(data => this.$store.commit("NEW_DATA", data.results))
         .catch(error => console.error(error));
+
       this.query = "";
     },
-    test() {
-      console.log(this.$store.getters.testGetter)
+    debug() {
+      console.log(this.$store.getters.testGetter);
+    },
+  },
+  computed: {
+    allResults(): Results[] {
+      return this.$store.getters.testGetter;
     }
   },
   components: { InfoCard },

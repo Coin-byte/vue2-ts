@@ -20,8 +20,11 @@ export interface RickMorty {
     created: String,
   }
 
+  export interface Results {
+      results: RickMorty[]
+  }
+
   export interface RootState {
     test: string[],
     hasData: boolean,
-    searchCache: Map<string, RickMorty>
 }

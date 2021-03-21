@@ -3,7 +3,7 @@
     <div>
       <img :src="info.image" alt="Avatar" />
     </div>
-    <div class="test">
+    <div class="info">
       <h3>{{ info.name }}</h3>
       <div>
         <p v-bind:class="info.status">{{ info.status }}</p>
@@ -48,7 +48,7 @@ img {
 .Dead {
   color: red;
 }
-.test {
+.info {
   margin: auto;
   width: 50%;
   padding: 10px;
