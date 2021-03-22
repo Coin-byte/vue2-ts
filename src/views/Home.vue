@@ -12,7 +12,6 @@
           required
         /><br />
       </form>
-      <button @click="debug">Debug</button>
     </div>
     <div class="container">
       <InfoCard v-for="result in allResults" :key="result.id" :info="result" />
@@ -21,7 +20,7 @@
 </template>
 
 <script lang="ts">
-import { Results } from "@/types";
+import { RickMorty } from "@/types";
 import Vue from "vue";
 import InfoCard from "../components/InfoCard.vue";
 
@@ -30,26 +29,18 @@ export default Vue.extend({
 
   data() {
     return {
-      url: "https://rickandmortyapi.com/api/character/?name=",
       query: "",
     };
   },
   methods: {
     fetchData() {
-      fetch(this.url + this.query)
-        .then(stream => stream.json())
-        .then(data => this.$store.commit("NEW_DATA", data.results))
-        .catch(error => console.error(error));
-
+      this.$store.dispatch("ACTION_SEARCH", this.query.toLowerCase());
       this.query = "";
-    },
-    debug() {
-      console.log(this.$store.getters.testGetter);
     },
   },
   computed: {
-    allResults(): Results[] {
-      return this.$store.getters.testGetter;
+    allResults(): RickMorty[] {
+      return this.$store.getters.currentResult;
     }
   },
   components: { InfoCard },

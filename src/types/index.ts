@@ -1,4 +1,3 @@
-
 export interface RickMorty {
     id: string,
     name: string, 
@@ -20,11 +19,17 @@ export interface RickMorty {
     created: String,
   }
 
-  export interface Results {
-      results: RickMorty[]
-  }
+export interface SearchResult {
+    searchKey: string,
+    resultIds: string[],
+    lastUpdate: Date,
+}
 
   export interface RootState {
-    test: string[],
+    searches: string[],
+    results: Map<string, SearchResult>
     hasData: boolean,
+    currentResult: RickMorty[],
+    characters: Map<string, RickMorty>,
 }
+
