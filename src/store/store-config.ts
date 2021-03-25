@@ -15,64 +15,65 @@ const baseUrl = "https://rickandmortyapi.com/api/character/?name=";
 const rootState: RootState = {
     searches: [], //"sökhistorik"
     results: new Map<string, SearchResult>(), //vilka ids fick vi med vår sökning
-    hasData: false,
     currentResult: [], //Det vi visar nu
-    characters: new Map<string, RickMorty>(), //Lagringen av karaktärer
+    /* characters: new Map<string, RickMorty>(), //Ganska onödig atm */
 }
 
 const storeConfig: StoreOptions<RootState> = {
     state: rootState,
     mutations: {
-        [UPDATE_CURRENT_RESULT](state, searchKey: string){
+        [UPDATE_CURRENT_RESULT](state, searchKey){
             state.currentResult = [];
-            const result = state.results.get(searchKey) as SearchResult;
-            result?.resultIds.forEach(id => {
-                const character = state.characters.get(id) as RickMorty;
-                if(character !== null){
+            if(searchKey.value !== null){
+                console.log("använt fetch")
+                const result: RickMorty[] = searchKey.value;
+                result.forEach((character: RickMorty) => {
                     state.currentResult.push(character)
-                }
-            })
+                });
+            }else{
+                console.log("Hämtar från map")
+                const result = state.results.get(searchKey.key)
+                result?.resultIds.forEach(id => {
+                    //const char = state.characters.get(id.id)
+                    state.currentResult.push(id)
+                })
+            }
         },
-        [MUTATION_NEW_CHARACTERS](state, results: []): void{
+/*         [MUTATION_NEW_CHARACTERS](state, results): void{
             const resultIds: string[] = [];
-            results.forEach(result => {
-                state.characters.set(result['id'], result as RickMorty),
-                resultIds.push(result['id'])
+            const payloadTest: RickMorty[] = results.value;
+           
+            payloadTest.forEach(ele => {
+                state.characters.set(ele.id, ele),
+                resultIds.push(ele.id)
             });
-            store.commit(UPDATE_CURRENT_RESULT, resultIds);
-        },
+            store.commit(UPDATE_CURRENT_RESULT, results);
+        }, */
         [MUTATION_NEW_RESULT](state, searchResult){
             const ids = [];
-            searchResult.value.forEach(element => {
-                ids.push(element)
+            searchResult.value.forEach((element: RickMorty) => {
+                ids.push(element.id)
             });
-            const result = { 
+            const result = {
                 searchKey: searchResult.key,
-                resultIds: searchResult.value,
+                resultIds: searchResult.value, 
                 lastUpdate: new Date(),
             }
             state.results.set(searchResult.key, result),
             state.searches.push(searchResult.key),
-            store.commit(MUTATION_NEW_CHARACTERS, searchResult.value)
+            //store.commit(MUTATION_NEW_CHARACTERS, searchResult)
+            store.commit(UPDATE_CURRENT_RESULT, searchResult)
         }
     },
     actions: {
         [ACTION_SEARCH](context, searchKey): void{
-            console.log(context.state.searches.indexOf(searchKey))
-            console.log(context.getters.searches)
             if(context.getters.searches.indexOf(searchKey) !== -1){
-                //hämta searchResult, kommita ids till UPDATE_CURRENT_RESULTS
-                return
+                store.commit(UPDATE_CURRENT_RESULT, {value: null, key: searchKey})
             }else{
                 fetch(baseUrl + searchKey)
                 .then(stream => stream.json())
                 .then(data => {
-                    const result = { 
-                        searchKey: searchKey,
-                        resultIds: searchResult.value,
-                        lastUpdate: new Date(),
-                    }
-                    this.commit(MUTATION_NEW_CHARACTERS, {value: data.results, key: searchKey})
+                    this.commit(MUTATION_NEW_RESULT, {value: data.results, key: searchKey})
                 })
             .catch(error => console.error(error));
             }
