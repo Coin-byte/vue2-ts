@@ -26,6 +26,7 @@ export interface SearchResult {
 }
 
   export interface RootState {
+    searchHistory: SearchResult[],
     results: Map<string, SearchResult>
     currentResult: RickMorty[],
     characters: Map<string, RickMorty>,
