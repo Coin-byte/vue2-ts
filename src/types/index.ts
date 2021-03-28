@@ -21,14 +21,13 @@ export interface RickMorty {
 
 export interface SearchResult {
     searchKey: string,
-    resultIds: RickMorty[],
+    resultIds: string[],
     lastUpdate: Date,
 }
 
   export interface RootState {
-    searches: string[],
     results: Map<string, SearchResult>
     currentResult: RickMorty[],
-    //characters: Map<string, RickMorty>,
+    characters: Map<string, RickMorty>,
 }
 
