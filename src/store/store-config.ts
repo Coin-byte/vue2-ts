@@ -8,6 +8,7 @@ const UPDATE_CURRENT_RESULT = 'UPDATE_CURRENT_RESULT';
 const ACTION_SEARCH = 'ACTION_SEARCH';
 const MUTATION_NEW_RESULT = 'MUTATION_NEW_RESULT';
 
+
 //split base url and use extra strings for calls
 //use one string 'character/?name=' for search
 //and one string 'xyz/?'id' for single character
@@ -18,11 +19,10 @@ const API_CHARACTER = "character/?id="
 
 
 const rootState: RootState = {
-    searches: [], //"sökhistorik"
     results: new Map<string, SearchResult>(), //vilka ids fick vi med vår sökning
     searchHistory: [], //sökhistorik
     currentResult: [], //Det vi visar nu
-    /* characters: new Map<string, RickMorty>(), //Ganska onödig atm */
+    characters: new Map<string, RickMorty>(),
 }
 
 const storeConfig: StoreOptions<RootState> = {
@@ -32,9 +32,7 @@ const storeConfig: StoreOptions<RootState> = {
             state.currentResult = characters
         },
         [MUTATION_NEW_RESULT](state, {searchKey, result}) {
-            //CALL SPECIFIC MUTATIONS INSTEAD
             const data = result as RickMorty[]
-            console.log(searchKey, data)
             data.forEach(newRickMorty => state.characters.set(newRickMorty.id, newRickMorty));
 
             const newSearchResult = {
@@ -43,19 +41,16 @@ const storeConfig: StoreOptions<RootState> = {
                 lastUpdate: new Date(),
             };
             state.results.set(searchKey, newSearchResult);
-
+            
+            if(!state.searchHistory.includes(newSearchResult.searchKey)){
+                state.searchHistory.push(newSearchResult.searchKey);
+            }
             store.commit(UPDATE_CURRENT_RESULT, data)
         },
-        //MUTATION_NEW_CHAR
-        //MUTATION_UPDATE_CHAR
-        //MUTATION_UPDATE_CHAR_MULTI
-        //MUTATION_NEW RESULT
     },
     actions: {
         [ACTION_SEARCH](context, searchKey): void {
-            const existingResult: SearchResult = context.getters.results.get(searchKey) //osäker om getter eller state??
-            //check existing            
-            console.log("existing search: ", existingResult)
+            const existingResult: SearchResult = context.getters.results.get(searchKey) //osäker om getter eller state??           
             if (existingResult != undefined) {
                 //show existing
                 const existingCharacters: RickMorty[] = context.getters.characters(existingResult.resultIds)
@@ -73,32 +68,29 @@ const storeConfig: StoreOptions<RootState> = {
                 //show data age to user?
                 //notice if an update has happened? fetch != existing?
             }
-            
+
             fetch(BASE_URL + API_SEARCH + searchKey)
-            .then(stream => stream.json())
-            .then(data => {
-                //check http-status 200-OK
-                //Redundant try???? 
-                try {
-                    const result: RickMorty[] = data.results as RickMorty[]
-                    console.log("key", searchKey);
-                    
-                    this.commit(MUTATION_NEW_RESULT, {searchKey, result})                     
-                } catch (error) {
-                    //show error message to user
-                    console.error(error);
-                    return
+            .then(response => {
+                if(!response.ok){
+                    console.log(response.status)
                 }
+                return response.json()
+            })
+            .then(data => {
+                    const result: RickMorty[] = data.results as RickMorty[]
+                    this.commit(MUTATION_NEW_RESULT, {searchKey, result})                     
             })
             .catch(error => {
                 //show error message to user
                 console.error(error);
             })
         }
+        
     },
     modules: {},
     getters: {
         currentResult: (state) => state.currentResult,
+        searchHistory: (state) => state.searchHistory,
         results: (state) => state.results,  
         allCharacters: (state) => state.characters,
         character: (state) => (id: string): RickMorty | undefined => state.characters.get(id),
