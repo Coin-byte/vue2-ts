@@ -18,10 +18,11 @@ const API_CHARACTER = "character/?id="
 
 
 const rootState: RootState = {
+    searches: [], //"sökhistorik"
     results: new Map<string, SearchResult>(), //vilka ids fick vi med vår sökning
     searchHistory: [], //sökhistorik
     currentResult: [], //Det vi visar nu
-    characters: new Map<string, RickMorty>() //Ganska onödig atm */
+    /* characters: new Map<string, RickMorty>(), //Ganska onödig atm */
 }
 
 const storeConfig: StoreOptions<RootState> = {
